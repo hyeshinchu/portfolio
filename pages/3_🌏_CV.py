@@ -15,9 +15,8 @@ with body:
     # Google Drive PDF 링크
     pdf_link = "https://drive.google.com/file/d/1fuDwXkFScytMaBrMDKEZ1WPHiY2Azf8N/view?usp=sharing"
 
-    # Google Drive 링크로 이력서 보기 및 다운로드 버튼 추가
-    st.markdown(f"[View CV]({pdf_link})", unsafe_allow_html=True)
-    st.markdown(f"[Download CV]({pdf_link})", unsafe_allow_html=True)
+    # PDF 링크를 클릭하면 새 창에서 열리도록 설정
+    st.markdown(f'<a href="{pdf_link}" target="_blank">이력서 보기</a>', unsafe_allow_html=True)
 
 '''
     # PDF 파일 경로 확인
