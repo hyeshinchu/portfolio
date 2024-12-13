@@ -30,8 +30,8 @@ with body:
         # 다운로드 버튼 추가
         with open(pdf_path, "rb") as file:
             btn = st.download_button(
-                label="Download CV",
-                data=file,
+                label="Download my :blue[CV]",
+                data=bytes,
                 file_name="cv_hyeshinchu.pdf",
                 mime="application/pdf"
             )          
