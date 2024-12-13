@@ -33,7 +33,7 @@ with body:
         st.download_button(
             label="Download my :blue[CV]",
             data=pdf_bytes,
-            file_name="CV_hyeshinchu.pdf",
+            file_name="cv_hyeshinchu.pdf",
             mime="application/pdf")
 
     with col3:
