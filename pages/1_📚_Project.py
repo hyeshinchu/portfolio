@@ -43,47 +43,75 @@ with body:
 
    with st.expander("Detail"):
       st.write("By creating a synthetic data pipeline, I enhanced training procedure of human pose recognition and facial expression generation architectures. The data generation pipeline has built training datasets worth $360,000.")
-      st.image("src/synthetic.png", use_container_width=True)
+      try:
+         img = Image.open("src/synthetic.png")
+         st.image(img)
+      except Exception as e:
+         st.error(f"Error loading image: {e}")
 
    # P6 ----------------------------------------------------------------
    Project_component(Project[4][0], Project[4][1])
 
    with st.expander("Detail"):
       st.write("I established qualitative and quantitative methods to evaluate the performance of 3D avatar facial expression architectures. I developed and executed qualitative studies, including surveys and focus group interviews with animation modelers.")
-      st.image("src/facial.png", use_container_width=True)
+      try:
+         img = Image.open("src/facial.png")
+         st.image(img)
+      except Exception as e:
+         st.error(f"Error loading image: {e}")
 
    # P5 ----------------------------------------------------------------
    Project_component(Project[5][0], Project[5][1])
 
    with st.expander("Detail"):
       st.write("I led a research project to understand how people perceive AI-generated music. I designed and conducted quantitative and qualitative experiments with 120 participants. Also, I performed statistical analyses, including ANOVA and t-tests, to interpret experiment data.")
-      st.image("src/p5_1.png", use_container_width=True)
+      try:
+         img = Image.open("src/p5_1.png")
+         st.image(img)
+      except Exception as e:
+         st.error(f"Error loading image: {e}")
 
    # P4 --------------------------------------------------------------
    Project_component(Project[6][0], Project[6][1])
    
    with st.expander("Detail"):
       st.write("I executed qualitative research to identify user pain points and behavior patterns.")
-      st.image("src/p4.png", use_container_width=True)
+      try:
+         img = Image.open("src/p4.png")
+         st.image(img)
+      except Exception as e:
+         st.error(f"Error loading image: {e}")
 
    # P3 -------------------------------------------------------------- 
    Project_component(Project[7][0], Project[7][1])
 
    with st.expander("Detail"):
       st.write("To identify the features of a visual analytics system, I executed some case studies to inverstigate user journey.")
-      st.image("src/p3.png", use_container_width=True)
+      try:
+         img = Image.open("src/p3.png")
+         st.image(img)
+      except Exception as e:
+         st.error(f"Error loading image: {e}")
 
    # P2 -----------------------------------------------------------
    Project_component(Project[8][0], Project[8][1])
 
    with st.expander("Detail"):
       st.write("I conducted user surveys and interviews, to identify user pain points and understand their behavior patterns. Then, I investigated the experiment result by thematic analysis.")
-      st.image("src/p2.png", use_container_width=True)
+      try:
+         img = Image.open("src/p2.png")
+         st.image(img)
+      except Exception as e:
+         st.error(f"Error loading image: {e}")
     
     # P1  -----------------------------------------------------------------------------
    Project_component(Project[9][0], Project[9][1])
    
    with st.expander("Detail"):
       st.write("I researched some existing studies to select forecasting architectures and dataset for the evaluation. I participated in writing research paper.")
-      st.image("src/p1.png", use_container_width=True)
+      try:
+         img = Image.open("src/p1.png")
+         st.image(img)
+      except Exception as e:
+         st.error(f"Error loading image: {e}")
 
