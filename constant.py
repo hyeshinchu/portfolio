@@ -4,11 +4,11 @@ skill_col_size = 5
 
 def menu():
     bar0, bar1, bar2, bar3, bar4 = st.columns([0.1,1,1,1,1])
-    bar1.page_link("🏠_Mainpage.py", label="Introduction", icon="🏠")
+    bar1.page_link("🏠_mainpage.py", label="Introduction", icon="🏠")
     #bar2.page_link("pages/1_📚_Experience.py", label= "Experience", icon="📚")
     bar2.page_link("pages/1_📚_project.py", label= "Project", icon="📚")
-    bar3.page_link("pages/2_🎨_Publication.py", label="Publication", icon="🎨")
-    bar4.page_link("pages/3_🌏_CV.py", label="CV", icon="🌏")
+    bar3.page_link("pages/2_🎨_publication.py", label="Publication", icon="🎨")
+    bar4.page_link("pages/3_🌏_cv.py", label="CV", icon="🌏")
     st.write("")
 
 #publication_url --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
