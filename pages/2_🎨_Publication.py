@@ -37,7 +37,6 @@ with body:
          st.image(img)
       except Exception as e:
          st.error(f"Error loading image: {e}")
-      st.image("src/p5_1.png", use_container_width=True)
 
    # P4 --------------------------------------------------------------
    Publication_component(Publication[2][0], Publication[2][1])
