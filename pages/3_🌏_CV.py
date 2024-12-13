@@ -9,17 +9,17 @@ margin_r, body, margin_l = st.columns([0.4, 3, 0.4])
 with body:
     #menu()
     def menu():
-    st.sidebar.title("Menu")
-    selection = st.sidebar.radio("Go to", ["🏠 Introduction", "📚 Project", "🎨 Publication", "🌏 CV"])
-    
-    if selection == "🏠 Introduction":
-        st.experimental_set_query_params(page="Introduction")
-    elif selection == "📚 Project":
-        st.experimental_set_query_params(page="Project")
-    elif selection == "🎨 Publication":
-        st.experimental_set_query_params(page="Publication")
-    elif selection == "🌏 CV":
-        st.experimental_set_query_params(page="CV")
+        st.sidebar.title("Menu")
+        selection = st.sidebar.radio("Go to", ["🏠 Introduction", "📚 Project", "🎨 Publication", "🌏 CV"])
+        
+        if selection == "🏠 Introduction":
+            st.experimental_set_query_params(page="Introduction")
+        elif selection == "📚 Project":
+            st.experimental_set_query_params(page="Project")
+        elif selection == "🎨 Publication":
+            st.experimental_set_query_params(page="Publication")
+        elif selection == "🌏 CV":
+            st.experimental_set_query_params(page="CV")
     
     st.header("🌏 CV", divider='rainbow')
 
