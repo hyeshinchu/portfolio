@@ -1,5 +1,6 @@
 import streamlit as st
 import streamlit.components.v1 as components
+from PIL import Image
 from constant import *
 from streamlit_player import st_player
 
@@ -31,6 +32,11 @@ with body:
    #st.image("src/p5_1.png", width=800)
    with st.expander("Abstract"):
       st.write("Music creation is difficult because one must express one's creativity while following strict rules. The advancement of deep learning technologies has diversified the methods to automate complex processes and express creativity in music composition. However, prior research has not paid much attention to exploring the audiences' subjective satisfaction to improve music generation models. In this paper, we evaluate human satisfaction with the state-of-the-art automatic symbolic music generation models using deep learning. In doing so, we define a taxonomy for music generation models and suggest nine subjective evaluation metrics. Through an evaluation study, we obtained more than 700 evaluations from 100 participants, using the suggested metrics. Our evaluation study reveals that the token representation method and models' characteristics affect subjective satisfaction. Through our qualitative analysis, we deepen our understanding of AI-generated music and suggested evaluation metrics. Lastly, we present lessons learned and discuss future research directions of deep learning models for music creation.")
+      try:
+         img = Image.open("src/p5_1.png")
+         st.image(img)
+      except Exception as e:
+         st.error(f"Error loading image: {e}")
       st.image("src/p5_1.png", use_container_width=True)
 
    # P4 --------------------------------------------------------------
