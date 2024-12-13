@@ -20,24 +20,24 @@ with body:
 
     with col1:
         st.write(info['brief'])
-        st.markdown(f"###### 😄 Name: {info['name']}")
-        st.markdown(f"###### 👉 Study: {info['study']}")
-        st.markdown(f"###### 📍 Location: {info['location']}")
-        st.markdown(f"###### 📚 Interest: {info['interest']}")
-        st.markdown("###### 🟡 Favorite Color: Yellow")
-        st.markdown(f"###### 👀 Linkedin: {linkedin_link}")
+        st.markdown(f"###### 😄 {info['name']}")
+        #st.markdown(f"###### 👉 Study: {info['study']}")
+        st.markdown(f"###### 📍 {info['location']}")
+        st.markdown(f"###### 📚 {info['interest']}")
+        #st.markdown("###### 🟡 Favorite Color: Yellow")
+        st.markdown(f"###### 👀 {linkedin_link}")
         
         with open("src/resume.pdf", "rb") as file:
-            pdf_file = file.read()
+            pdf_bytes = file.read()
 
         st.download_button(
             label="Download my :blue[resume]",
-            data=pdf_file,
-            file_name="resume",
+            data=pdf_bytes,
+            file_name="resume_hyeshinchu.pdf",
             mime="application/pdf")
 
     with col3:
-        st.image("src/portrait.jpeg", width=360)
+        st.image("src/profile_3.jpg", width=360)
 
     # skills --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
     st.subheader("My :blue[skills] ⚒️",divider='rainbow') #,divider='rainbow'
