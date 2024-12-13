@@ -6,7 +6,7 @@ def menu():
     bar0, bar1, bar2, bar3, bar4 = st.columns([0.1,1,1,1,1])
     bar1.page_link("🏠_Mainpage.py", label="Introduction", icon="🏠")
     #bar2.page_link("pages/1_📚_Experience.py", label= "Experience", icon="📚")
-    bar2.page_link("pages/1_📚_Project.py", label= "Project", icon="📚")
+    bar2.page_link("pages/1_📚_project.py", label= "Project", icon="📚")
     bar3.page_link("pages/2_🎨_Publication.py", label="Publication", icon="🎨")
     bar4.page_link("pages/3_🌏_CV.py", label="CV", icon="🌏")
     st.write("")
