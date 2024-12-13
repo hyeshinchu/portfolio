@@ -8,7 +8,7 @@ def menu():
     #bar2.page_link("pages/1_📚_Experience.py", label= "Experience", icon="📚")
     bar2.page_link("pages/1_📚_Project.py", label= "Project", icon="📚")
     bar3.page_link("pages/2_🎨_Publication.py", label="Publication", icon="🎨")
-    bar4.page_link("pages/3_🌏_CV.py", label="CV", icon="🌏")
+    #bar4.page_link("pages/3_🌏_CV.py", label="CV", icon="🌏")
     st.write("")
 
 #publication_url --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
