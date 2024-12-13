@@ -25,7 +25,7 @@ with body:
             st.markdown(pdf_display, unsafe_allow_html=True)
 
         # PDF 파일 표시
-        #show_pdf(pdf_path)
+        displayPDF(pdf_path)
 
         # 다운로드 버튼 추가
         with open(pdf_path, "rb") as file:
