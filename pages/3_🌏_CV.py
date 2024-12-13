@@ -12,6 +12,14 @@ with body:
     
     st.header("🌏 Curriculum Vitae", divider='rainbow')
 
+    # Google Drive PDF 링크
+    pdf_link = "https://drive.google.com/file/d/1fuDwXkFScytMaBrMDKEZ1WPHiY2Azf8N/view?usp=sharing"
+
+    # Google Drive 링크로 이력서 보기 및 다운로드 버튼 추가
+    st.markdown(f"[View CV]({pdf_link})", unsafe_allow_html=True)
+    st.markdown(f"[Download CV]({pdf_link})", unsafe_allow_html=True)
+
+'''
     # PDF 파일 경로 확인
     pdf_path = "src/resume.pdf"
     if not os.path.exists(pdf_path):
@@ -35,3 +43,4 @@ with body:
                 file_name="resume_hyeshinchu.pdf",
                 mime="application/pdf"
             )
+'''            
