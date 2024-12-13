@@ -31,7 +31,7 @@ with body:
             pdf_bytes = file.read()
 
         st.download_button(
-            label="Download my :blue[resume]",
+            label="Download my :blue[CV]",
             data=pdf_bytes,
             file_name="resume_hyeshinchu.pdf",
             mime="application/pdf")
