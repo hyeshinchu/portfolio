@@ -31,7 +31,7 @@ with body:
         with open(pdf_path, "rb") as file:
             btn = st.download_button(
                 label="Download my :blue[CV]",
-                data=bytes,
+                data=file,
                 file_name="cv_hyeshinchu.pdf",
                 mime="application/pdf"
             )          
