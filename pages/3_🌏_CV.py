@@ -2,6 +2,7 @@ import streamlit as st
 from constant import *
 import streamlit.components.v1 as components
 import os
+import base64
 
 
 st.set_page_config(page_title="CV", page_icon="🌏",initial_sidebar_state="collapsed",layout="wide") #
