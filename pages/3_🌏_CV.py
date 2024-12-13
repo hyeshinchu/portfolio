@@ -4,7 +4,7 @@ import streamlit.components.v1 as components
 import os
 import base64
 
-st.set_page_config(page_title="cv", page_icon="🌏",initial_sidebar_state="collapsed",layout="wide") #
+st.set_page_config(page_title="CV", page_icon="🌏",initial_sidebar_state="collapsed",layout="wide") #
 margin_r,body,margin_l = st.columns([0.4, 3, 0.4])
 
 with body:
