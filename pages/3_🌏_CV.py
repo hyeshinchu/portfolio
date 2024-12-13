@@ -10,7 +10,7 @@ margin_r,body,margin_l = st.columns([0.4, 3, 0.4])
 with body:
     menu()
     
-    st.header("🌏 CV", divider='rainbow')
+    st.header("🌏 Curriculum Vitae", divider='rainbow')
 
     # PDF 파일 경로 확인
     pdf_path = "src/resume.pdf"
