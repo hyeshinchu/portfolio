@@ -23,7 +23,7 @@ with body:
       st.write("To launch a virtual try-on service, I have conducted market research, defined key features of an web application, created user journey and interface layouts. Also, I developed an internal tool and a pipeline to create training and test dataset for the AI architecture.")
       try:
          img = Image.open("src/vto_demo.png")
-         st.image(img, use_container_width=True)
+         st.image(img)
       except Exception as e:
          st.error(f"Error loading image: {e}")
 
