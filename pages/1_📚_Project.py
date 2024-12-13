@@ -32,7 +32,11 @@ with body:
 
    with st.expander("Detail"):
       st.write("By launching an AI avatar profile service, user acquisition rate has been increased by 92% and achieved 75% reach rate. I designed 900 prompt templates for figure and background, respectively. I performed thematic analysis to quantify and interpret responses")
-      st.image("src/avatar_profile.png", use_container_width=True)
+      try:
+         img = Image.open("src/avatar_profile.png")
+         st.image(img)
+      except Exception as e:
+         st.error(f"Error loading image: {e}")
 
    # P7 ----------------------------------------------------------------
    Project_component(Project[3][0], Project[3][1])
