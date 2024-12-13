@@ -32,6 +32,6 @@ with body:
             btn = st.download_button(
                 label="Download CV",
                 data=file,
-                file_name="resume_hyeshinchu.pdf",
+                file_name="cv_hyeshinchu.pdf",
                 mime="application/pdf"
             )          
