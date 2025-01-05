@@ -1,3 +1,3 @@
 # portfolio
 
-This is a personal portofolio website used `Streamlit`.\
+This is a personal portofolio website built with `Streamlit`.\
