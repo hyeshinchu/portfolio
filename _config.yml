@@ -1,0 +1,23 @@
+title: Hyeshin Chu
+author:
+  name: Hyeshin Chu
+  email: hyeshinchu@gmail.com
+description: >
+  HCI researcher | AI Product Manager at SNOW Corporation
+google_analytics_id: UA-215543768-1
+
+show_excerpts: false # set to true to show excerpts on the homepage
+permalink: /:title
+
+baseurl: ""
+
+plugins:
+ - jekyll-feed
+ - jekyll-seo-tag
+ - jekyll-sitemap
+
+collections:
+  publication:
+    output: true
+
+theme: minima
