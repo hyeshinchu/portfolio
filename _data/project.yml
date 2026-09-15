@@ -1,6 +1,8 @@
 project:
   - title: "EchoX: An LLM Persona-based Agentic System for UX Research"
     no_image: true
+    video: "https://www.youtube.com/watch?v=EDKcpPkfYIQ&t=1295s"
+    media: "https://www.etnews.com/20260824000116"
     detail: >
       <p>Led the development of EchoX, an LLM persona-based agentic system that automates end-to-end user research — from persona generation and autonomous task execution to behavioral data collection and analysis.</p>
 
