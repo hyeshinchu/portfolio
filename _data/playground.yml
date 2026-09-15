@@ -29,3 +29,18 @@ playground:
       - Paper Review
     description: >-
       Reviewing the paper that introduced small-world networks, and building an interactive simulation to watch clustering and path length diverge as a ring lattice is randomly rewired
+  - title: "On Random Graphs I (Erdős-Rényi model)"
+    no_image: true
+    paper: "https://bpb-us-e1.wpmucdn.com/campuspress-test.yale.edu/dist/6/2449/files/2018/02/Erdos-Renyi-1n0pskh.pdf"
+    demo: "/assets/playground/on-random-graphs/"
+    demo_inline: true
+    detail: >
+      <p>Erdős and Rényi's 1959 paper asked three questions about a graph formed by connecting n labelled points at random: what is the probability it's completely connected, how big is its largest connected component, and how many connected components does it have? Answering these revealed one of the most influential results in network science — as the average number of connections per node (c) crosses 1, the graph undergoes a sudden phase transition from many small, disconnected fragments into a single "giant component" that swallows almost every node.</p>
+
+      <p>I built the simulation below to see this threshold myself — adding random edges to a network and watching the largest connected component suddenly take over as c passes 1, tracked against a reference curve computed from a larger network.</p>
+    tags:
+      - Network Science
+      - Complex Systems
+      - Paper Review
+    description: >-
+      Reviewing the paper that introduced random graphs, and building an interactive simulation to watch a giant connected component suddenly emerge as edges are added

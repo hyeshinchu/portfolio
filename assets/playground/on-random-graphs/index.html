@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>On Random Graphs I — Interactive Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --accent: #2f6fed;
+    --accent2: #e2533d;
+    --text: #333;
+    --muted: #888;
+    --border: #e6e6e6;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; font-family: 'Barlow', Arial, sans-serif; color: var(--text); background: #fff; }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 20px 20px 28px; }
+  h1 { font-size: 1.15rem; font-weight: 500; margin: 0 0 10px; }
+  .intro p { font-size: .85rem; font-weight: 300; line-height: 1.55; margin: 0 0 10px; }
+  .intro code { background: #f4f4f4; padding: 1px 5px; border-radius: 3px; font-size: .82em; }
+  .controls {
+    display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px;
+    padding: 14px; margin: 14px 0; background: #fafafa; border: 1px solid var(--border); border-radius: 8px;
+  }
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  .field label { font-size: .7rem; font-weight: 500; text-transform: uppercase; letter-spacing: .3px; color: var(--muted); }
+  .c-field { flex: 1 1 260px; }
+  .c-field input[type=range] { width: 100%; }
+  .c-value { font-size: .85rem; font-weight: 500; }
+  button {
+    font-family: inherit; font-size: .8rem; padding: 6px 12px;
+    border: 1px solid #333; background: #fff; color: #333; border-radius: 5px; cursor: pointer;
+  }
+  button:hover { background: #333; color: #fff; }
+  .panels { display: flex; gap: 14px; flex-wrap: wrap; }
+  .panel { flex: 1 1 420px; border: 1px solid var(--border); border-radius: 8px; padding: 10px; min-width: 0; }
+  .panel h2 { font-size: .78rem; font-weight: 500; text-transform: uppercase; letter-spacing: .3px; color: var(--muted); margin: 0 0 8px; }
+  #netCanvas { width: 100%; height: 360px; display: block; }
+  #curveCanvas { width: 100%; height: 260px; display: block; }
+  .legend { display: flex; align-items: center; gap: 8px; font-size: .72rem; color: var(--muted); margin-top: 8px; flex-wrap: wrap; }
+  .legend .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+  .legend .line { width: 14px; height: 2px; display: inline-block; }
+  .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px 14px; margin-top: 10px; font-size: .78rem; }
+  .stats .stat-label { color: var(--muted); }
+  .stats .stat-value { font-weight: 500; }
+  .status { font-size: .75rem; color: var(--muted); margin: 4px 0 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="intro">
+    <h1>On Random Graphs I — Interactive Demo</h1>
+    <p>Erdős &amp; Rényi (1959) asked three questions about a graph formed by connecting <code>n</code> labelled points at random: What is the probability it's <b>completely connected</b>? How big is its <b>largest connected component</b>? How many <b>connected components</b> does it have? Answering these for growing <code>n</code> revealed one of the most influential results in network science: as the average number of connections per node (<code>c</code>) crosses <code>1</code>, the graph undergoes a sudden phase transition — from many small, disconnected fragments to a single "giant component" that swallows almost every node.</p>
+    <p>Drag <code>c</code> below to add random edges to the network on the left, and watch where it lands on the giant-component curve on the right (computed once from a larger reference network) — the same threshold behavior the paper predicted for <code>n → ∞</code>.</p>
+  </div>
+
+  <div class="controls">
+    <div class="field c-field">
+      <label for="cSlider">Average degree c = <span class="c-value" id="cValue">0.00</span></label>
+      <input type="range" id="cSlider" min="0" max="600" value="0" step="1">
+    </div>
+    <div class="field">
+      <label>&nbsp;</label>
+      <button id="rerollBtn">Re-randomize</button>
+    </div>
+  </div>
+
+  <div class="panels">
+    <div class="panel">
+      <h2>Random graph (n = 60, illustrative)</h2>
+      <canvas id="netCanvas"></canvas>
+      <div class="legend">
+        <span class="dot" style="background: var(--accent);"></span> largest component
+        <span class="dot" style="background: rgba(160,160,160,0.7); margin-left: 8px;"></span> other components / isolated
+      </div>
+    </div>
+    <div class="panel">
+      <h2>Giant component vs. c (n = 300 reference)</h2>
+      <canvas id="curveCanvas"></canvas>
+      <div class="legend">
+        <span class="line" style="background: var(--accent);"></span> largest component / n
+        <span class="line" style="background: rgba(0,0,0,0.25); margin-left: 8px;"></span> c = 1 (theoretical threshold)
+      </div>
+      <div class="stats">
+        <div><span class="stat-label">Nodes (n):</span> <span class="stat-value" id="statN">60</span></div>
+        <div><span class="stat-label">Edges:</span> <span class="stat-value" id="statE">0</span></div>
+        <div><span class="stat-label">Components:</span> <span class="stat-value" id="statComp">—</span></div>
+        <div><span class="stat-label">Largest component:</span> <span class="stat-value" id="statLargest">—</span></div>
+        <div style="grid-column: 1 / -1;"><span class="stat-label">Completely connected?</span> <span class="stat-value" id="statConn">—</span></div>
+      </div>
+      <p class="status" id="curveStatus">Computing reference curve…</p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  // ---------- illustrative random graph (visual) ----------
+  var N_VIS = 60;
+  var vis = { nodes: [], edges: [] };
+
+  function initVisNodes() {
+    vis.nodes = [];
+    for (var i = 0; i < N_VIS; i++) {
+      var angle = Math.random() * Math.PI * 2, r = 10 + Math.random() * 8;
+      vis.nodes.push({ x: Math.cos(angle) * r, y: Math.sin(angle) * r, vx: 0, vy: 0, fx: 0, fy: 0, comp: -1 });
+    }
+  }
+  initVisNodes();
+
+  function generateEdges(n, c) {
+    var p = c / (n - 1);
+    var edges = [];
+    var list = [];
+    for (var i = 0; i < n; i++) list.push([]);
+    for (var i = 0; i < n; i++) {
+      for (var j = i + 1; j < n; j++) {
+        if (Math.random() < p) {
+          edges.push([i, j]);
+          list[i].push(j); list[j].push(i);
+        }
+      }
+    }
+    return { edges: edges, list: list };
+  }
+
+  function findComponents(list, n) {
+    var compId = new Int32Array(n).fill(-1);
+    var sizes = [];
+    var cid = 0;
+    for (var s = 0; s < n; s++) {
+      if (compId[s] !== -1) continue;
+      var queue = [s];
+      compId[s] = cid;
+      var qi = 0, size = 0;
+      while (qi < queue.length) {
+        var u = queue[qi++];
+        size++;
+        var nb = list[u];
+        for (var k = 0; k < nb.length; k++) {
+          var v = nb[k];
+          if (compId[v] === -1) { compId[v] = cid; queue.push(v); }
+        }
+      }
+      sizes.push(size);
+      cid++;
+    }
+    return { compId: compId, sizes: sizes, numComponents: cid };
+  }
+
+  function stepPhysics(nodes, edges) {
+    var n = nodes.length;
+    var repulsion = 500, springK = 0.03, springLen = 22, damping = 0.82, gravity = 0.02;
+    for (var i = 0; i < n; i++) {
+      var ni = nodes[i], fx = 0, fy = 0;
+      for (var j = 0; j < n; j++) {
+        if (i === j) continue;
+        var nj = nodes[j];
+        var dx = ni.x - nj.x, dy = ni.y - nj.y;
+        var distSq = dx * dx + dy * dy;
+        if (distSq < 0.02) { dx = Math.random() - 0.5; dy = Math.random() - 0.5; distSq = 1; }
+        var dist = Math.sqrt(distSq);
+        var force = repulsion / distSq;
+        fx += (dx / dist) * force;
+        fy += (dy / dist) * force;
+      }
+      fx += -ni.x * gravity;
+      fy += -ni.y * gravity;
+      ni.fx = fx; ni.fy = fy;
+    }
+    for (var e = 0; e < edges.length; e++) {
+      var a = nodes[edges[e][0]], b = nodes[edges[e][1]];
+      var edx = b.x - a.x, edy = b.y - a.y;
+      var edist = Math.sqrt(edx * edx + edy * edy) || 0.01;
+      var eforce = springK * (edist - springLen);
+      var efx = (edx / edist) * eforce, efy = (edy / edist) * eforce;
+      a.fx += efx; a.fy += efy;
+      b.fx -= efx; b.fy -= efy;
+    }
+    for (var k2 = 0; k2 < n; k2++) {
+      var nk = nodes[k2];
+      nk.vx = (nk.vx + nk.fx) * damping;
+      nk.vy = (nk.vy + nk.fy) * damping;
+      nk.x += nk.vx; nk.y += nk.vy;
+    }
+  }
+
+  function setupCanvas(canvas) {
+    var dpr = window.devicePixelRatio || 1;
+    var w = canvas.clientWidth, h = canvas.clientHeight;
+    canvas.width = Math.max(1, w * dpr);
+    canvas.height = Math.max(1, h * dpr);
+    var ctx = canvas.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return ctx;
+  }
+
+  function renderNetwork() {
+    var canvas = document.getElementById('netCanvas');
+    var ctx = setupCanvas(canvas);
+    var w = canvas.clientWidth, h = canvas.clientHeight;
+    ctx.clearRect(0, 0, w, h);
+    if (!vis.nodes.length) return;
+
+    var minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+    for (var i = 0; i < vis.nodes.length; i++) {
+      var n = vis.nodes[i];
+      if (n.x < minX) minX = n.x; if (n.x > maxX) maxX = n.x;
+      if (n.y < minY) minY = n.y; if (n.y > maxY) maxY = n.y;
+    }
+    var pad = 26;
+    var bw = Math.max(maxX - minX, 1), bh = Math.max(maxY - minY, 1);
+    var scale = Math.min((w - pad * 2) / bw, (h - pad * 2) / bh, 8);
+    var cx = (minX + maxX) / 2, cy = (minY + maxY) / 2;
+
+    ctx.save();
+    ctx.translate(w / 2, h / 2);
+    ctx.scale(scale, scale);
+    ctx.translate(-cx, -cy);
+
+    ctx.strokeStyle = 'rgba(60,60,60,0.2)';
+    ctx.lineWidth = 1 / scale;
+    ctx.beginPath();
+    for (var e = 0; e < vis.edges.length; e++) {
+      var a = vis.nodes[vis.edges[e][0]], b = vis.nodes[vis.edges[e][1]];
+      ctx.moveTo(a.x, a.y);
+      ctx.lineTo(b.x, b.y);
+    }
+    ctx.stroke();
+
+    for (var k = 0; k < vis.nodes.length; k++) {
+      var node = vis.nodes[k];
+      ctx.beginPath();
+      ctx.arc(node.x, node.y, 4, 0, Math.PI * 2);
+      ctx.fillStyle = node.comp === 0 ? '#2f6fed' : 'rgba(160,160,160,0.75)';
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  function regenerateVis(c) {
+    var gen = generateEdges(N_VIS, c);
+    vis.edges = gen.edges;
+    var comp = findComponents(gen.list, N_VIS);
+    var largestIdx = 0, largestSize = 0;
+    comp.sizes.forEach(function (s, idx) { if (s > largestSize) { largestSize = s; largestIdx = idx; } });
+    for (var i = 0; i < N_VIS; i++) {
+      vis.nodes[i].comp = comp.compId[i] === largestIdx ? 0 : 1;
+    }
+    document.getElementById('statE').textContent = gen.edges.length;
+    document.getElementById('statComp').textContent = comp.numComponents;
+    document.getElementById('statLargest').textContent = largestSize + ' / ' + N_VIS + ' (' + (100 * largestSize / N_VIS).toFixed(0) + '%)';
+    document.getElementById('statConn').textContent = (comp.numComponents === 1 && largestSize === N_VIS) ? 'Yes' : 'No';
+  }
+
+  // ---------- larger reference network for the giant-component curve ----------
+  var N_STAT = 300;
+
+  function averageLargestFraction(n, c, trials) {
+    var sum = 0;
+    for (var t = 0; t < trials; t++) {
+      var gen = generateEdges(n, c);
+      var comp = findComponents(gen.list, n);
+      var largest = 0;
+      comp.sizes.forEach(function (s) { if (s > largest) largest = s; });
+      sum += largest / n;
+    }
+    return sum / trials;
+  }
+
+  var curve = null;
+
+  function computeCurve() {
+    var numSamples = 30, trials = 12, pts = [];
+    for (var i = 0; i < numSamples; i++) {
+      var c = 6 * i / (numSamples - 1);
+      pts.push({ c: c, frac: averageLargestFraction(N_STAT, c, trials) });
+    }
+    curve = pts;
+  }
+
+  function drawCurve(currentC) {
+    var canvas = document.getElementById('curveCanvas');
+    var ctx = setupCanvas(canvas);
+    var w = canvas.clientWidth, h = canvas.clientHeight;
+    ctx.clearRect(0, 0, w, h);
+    if (!curve) return;
+
+    var margin = { left: 34, right: 12, top: 12, bottom: 26 };
+    var plotW = Math.max(1, w - margin.left - margin.right);
+    var plotH = Math.max(1, h - margin.top - margin.bottom);
+    var maxC = 6;
+
+    function xOf(c) { return margin.left + (c / maxC) * plotW; }
+    function yOf(frac) { return margin.top + (1 - frac) * plotH; }
+
+    ctx.strokeStyle = '#ccc';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(margin.left, margin.top);
+    ctx.lineTo(margin.left, margin.top + plotH);
+    ctx.lineTo(margin.left + plotW, margin.top + plotH);
+    ctx.stroke();
+
+    ctx.fillStyle = '#999';
+    ctx.font = '10px Barlow, sans-serif';
+    ctx.fillText('c (average degree)', margin.left + plotW / 2 - 34, h - 6);
+
+    // theoretical threshold at c = 1
+    ctx.strokeStyle = 'rgba(0,0,0,0.25)';
+    ctx.lineWidth = 1;
+    ctx.setLineDash([3, 3]);
+    ctx.beginPath();
+    ctx.moveTo(xOf(1), margin.top);
+    ctx.lineTo(xOf(1), margin.top + plotH);
+    ctx.stroke();
+    ctx.setLineDash([]);
+
+    ctx.strokeStyle = '#2f6fed';
+    ctx.lineWidth = 1.8;
+    ctx.beginPath();
+    curve.forEach(function (pt, i) {
+      var x = xOf(pt.c), y = yOf(pt.frac);
+      if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+    });
+    ctx.stroke();
+    ctx.fillStyle = '#2f6fed';
+    curve.forEach(function (pt) {
+      var x = xOf(pt.c), y = yOf(pt.frac);
+      ctx.beginPath();
+      ctx.arc(x, y, 2.2, 0, Math.PI * 2);
+      ctx.fill();
+    });
+
+    var mx = xOf(Math.min(currentC, maxC));
+    ctx.strokeStyle = 'rgba(226,83,61,0.8)';
+    ctx.lineWidth = 1.4;
+    ctx.setLineDash([2, 2]);
+    ctx.beginPath();
+    ctx.moveTo(mx, margin.top);
+    ctx.lineTo(mx, margin.top + plotH);
+    ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  // ---------- UI wiring ----------
+  var cSlider = document.getElementById('cSlider');
+  var cValue = document.getElementById('cValue');
+  var rerollBtn = document.getElementById('rerollBtn');
+  var curveStatus = document.getElementById('curveStatus');
+
+  function sliderToC(v) { return (v / 600) * 6; }
+
+  function update() {
+    var c = sliderToC(Number(cSlider.value));
+    cValue.textContent = c.toFixed(2);
+    regenerateVis(c);
+    drawCurve(c);
+  }
+
+  cSlider.addEventListener('input', update);
+  rerollBtn.addEventListener('click', update);
+
+  function animate() {
+    stepPhysics(vis.nodes, vis.edges);
+    renderNetwork();
+    requestAnimationFrame(animate);
+  }
+
+  update();
+  requestAnimationFrame(animate);
+
+  setTimeout(function () {
+    computeCurve();
+    curveStatus.style.display = 'none';
+    drawCurve(sliderToC(Number(cSlider.value)));
+  }, 10);
+})();
+</script>
+</body>
+</html>
