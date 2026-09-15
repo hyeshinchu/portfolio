@@ -1,4 +1,10 @@
 list: # format date as dd/mm/yyyy
+  - title: "Presented EchoX at UX Korea 2026"
+    date: "02/09/2026"
+    description: "Shared how we're using AI personas to automate user research at UX Korea 2026✨"
+  - title: "Presented EchoX at NAVER DAN 2025"
+    date: "07/11/2025"
+    description: "Had the exciting opportunity to present EchoX, our LLM persona-based agentic UX research system, at NAVER DAN 2025🎤"
   - title: "Launching AI avatar profile generation service"
     date: "20/09/2023"
     description: "So excited to share our new service in Korea, Japan, and Thailand. You can generate your own avatar profile using AI🎨"
