@@ -18,6 +18,7 @@ project:
       Building an LLM persona-based agentic system that automates end-to-end user research
   - title: Measuring Cognitive Load in Search Experience
     no_image: true
+    paper: "https://online.fliphtml5.com/plokm/hnvj/#p=47"
     detail: >
       <p>Partnered with an university to measure the cognitive burden users experience in NAVER's search results, using eye-tracking, surveys, and interviews — translating findings into search experience design.</p>
 
