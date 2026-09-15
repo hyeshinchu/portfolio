@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Collective Dynamics of Small-World Networks — Interactive Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --accent: #2f6fed;
+    --accent2: #e2533d;
+    --text: #333;
+    --muted: #888;
+    --border: #e6e6e6;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Barlow', Arial, sans-serif;
+    color: var(--text);
+    background: #fff;
+  }
+  .wrap { max-width: 1000px; margin: 0 auto; padding: 20px 20px 28px; }
+  h1 { font-size: 1.15rem; font-weight: 500; margin: 0 0 10px; }
+  .intro p { font-size: .85rem; font-weight: 300; line-height: 1.55; margin: 0 0 10px; }
+  .intro code { background: #f4f4f4; padding: 1px 5px; border-radius: 3px; font-size: .82em; }
+  .controls {
+    display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px;
+    padding: 14px; margin: 14px 0; background: #fafafa;
+    border: 1px solid var(--border); border-radius: 8px;
+  }
+  .field { display: flex; flex-direction: column; gap: 4px; }
+  .field label { font-size: .7rem; font-weight: 500; text-transform: uppercase; letter-spacing: .3px; color: var(--muted); }
+  .p-field { flex: 1 1 260px; }
+  .p-field input[type=range] { width: 100%; }
+  .p-value { font-size: .85rem; font-weight: 500; }
+  button {
+    font-family: inherit; font-size: .8rem; padding: 6px 12px;
+    border: 1px solid #333; background: #fff; color: #333; border-radius: 5px; cursor: pointer;
+  }
+  button:hover { background: #333; color: #fff; }
+  .panels { display: flex; gap: 14px; flex-wrap: wrap; }
+  .panel { flex: 1 1 420px; border: 1px solid var(--border); border-radius: 8px; padding: 10px; min-width: 0; }
+  .panel h2 { font-size: .78rem; font-weight: 500; text-transform: uppercase; letter-spacing: .3px; color: var(--muted); margin: 0 0 8px; }
+  #ringCanvas { width: 100%; height: 360px; display: block; }
+  #curveCanvas { width: 100%; height: 300px; display: block; }
+  .legend { display: flex; align-items: center; gap: 8px; font-size: .72rem; color: var(--muted); margin-top: 8px; flex-wrap: wrap; }
+  .legend .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+  .legend .line { width: 14px; height: 2px; display: inline-block; }
+  .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px 14px; margin-top: 10px; font-size: .78rem; }
+  .stats .stat-label { color: var(--muted); }
+  .stats .stat-value { font-weight: 500; }
+  .status { font-size: .75rem; color: var(--muted); margin: 4px 0 0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="intro">
+    <h1>Collective Dynamics of Small-World Networks — Interactive Demo</h1>
+    <p>Watts &amp; Strogatz (1998) started from a <b>regular ring lattice</b>, where every node connects only to its nearest neighbors — highly clustered, but far apart (many hops between distant nodes). They then rewired each local edge to a random node with probability <code>p</code>. At <code>p = 1</code> the network is essentially random: short paths, but almost no local clustering. The surprise was in between — even a <i>tiny</i> amount of rewiring (small <code>p</code>) collapses the average path length almost to the random-graph level, while the clustering coefficient barely drops. A network can be <i>both</i> highly clustered <i>and</i> a "small world" at the same time.</p>
+    <p>Drag the slider to rewire the illustrative ring on the left, and watch where that <code>p</code> lands on the reference curve on the right (computed once from a larger N = 400 network) — the same curve shape as the paper's Figure 2.</p>
+  </div>
+
+  <div class="controls">
+    <div class="field p-field">
+      <label for="pSlider">Rewiring probability p = <span class="p-value" id="pValue">0</span></label>
+      <input type="range" id="pSlider" min="0" max="1000" value="0" step="1">
+    </div>
+    <div class="field">
+      <label>&nbsp;</label>
+      <button id="rerollBtn">Re-randomize ring</button>
+    </div>
+  </div>
+
+  <div class="panels">
+    <div class="panel">
+      <h2>Ring lattice (N = 20, illustrative)</h2>
+      <canvas id="ringCanvas"></canvas>
+      <div class="legend">
+        <span class="dot" style="background: rgba(60,60,60,0.35);"></span> local edge
+        <span class="dot" style="background: var(--accent2); margin-left: 8px;"></span> rewired shortcut
+      </div>
+    </div>
+    <div class="panel">
+      <h2>Clustering &amp; path length vs. p (N = 400 reference)</h2>
+      <canvas id="curveCanvas"></canvas>
+      <div class="legend">
+        <span class="line" style="background: var(--accent);"></span> C(p) / C(0)
+        <span class="line" style="background: var(--accent2); margin-left: 8px;"></span> L(p) / L(0)
+      </div>
+      <div class="stats">
+        <div><span class="stat-label">C(p)/C(0):</span> <span class="stat-value" id="statC">—</span></div>
+        <div><span class="stat-label">L(p)/L(0):</span> <span class="stat-value" id="statL">—</span></div>
+      </div>
+      <p class="status" id="curveStatus">Computing reference curve…</p>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+
+  // ---------- small illustrative ring (visual only) ----------
+  var N_VIS = 20, K_VIS = 4;
+
+  function buildRingSets(N, k) {
+    var half = k / 2;
+    var adj = [];
+    for (var i = 0; i < N; i++) adj.push(new Set());
+    for (var i = 0; i < N; i++) {
+      for (var j = 1; j <= half; j++) {
+        var b = (i + j) % N;
+        adj[i].add(b); adj[b].add(i);
+      }
+    }
+    return adj;
+  }
+
+  function rewireSets(baseAdj, N, k, p) {
+    var half = k / 2;
+    var adj = baseAdj.map(function (s) { return new Set(s); });
+    for (var i = 0; i < N; i++) {
+      for (var j = 1; j <= half; j++) {
+        var target = (i + j) % N;
+        if (!adj[i].has(target)) continue;
+        if (Math.random() < p) {
+          var newTarget, tries = 0;
+          do { newTarget = Math.floor(Math.random() * N); tries++; }
+          while ((newTarget === i || adj[i].has(newTarget)) && tries < 200);
+          if (newTarget !== i && !adj[i].has(newTarget)) {
+            adj[i].delete(target); adj[target].delete(i);
+            adj[i].add(newTarget); adj[newTarget].add(i);
+          }
+        }
+      }
+    }
+    return adj;
+  }
+
+  function ringVisEdges(adj, N, k) {
+    var half = k / 2, edges = [];
+    for (var i = 0; i < N; i++) {
+      adj[i].forEach(function (j) {
+        if (j > i) {
+          var d = Math.min(Math.abs(i - j), N - Math.abs(i - j));
+          edges.push({ a: i, b: j, shortcut: d > half });
+        }
+      });
+    }
+    return edges;
+  }
+
+  var baseRingVis = buildRingSets(N_VIS, K_VIS);
+
+  function setupCanvas(canvas) {
+    var dpr = window.devicePixelRatio || 1;
+    var w = canvas.clientWidth, h = canvas.clientHeight;
+    canvas.width = Math.max(1, w * dpr);
+    canvas.height = Math.max(1, h * dpr);
+    var ctx = canvas.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return ctx;
+  }
+
+  function drawRing(p) {
+    var canvas = document.getElementById('ringCanvas');
+    var ctx = setupCanvas(canvas);
+    var w = canvas.clientWidth, h = canvas.clientHeight;
+    ctx.clearRect(0, 0, w, h);
+    var cx = w / 2, cy = h / 2, radius = Math.min(w, h) / 2 - 24;
+
+    var positions = [];
+    for (var i = 0; i < N_VIS; i++) {
+      var angle = (i / N_VIS) * Math.PI * 2 - Math.PI / 2;
+      positions.push({ x: cx + Math.cos(angle) * radius, y: cy + Math.sin(angle) * radius });
+    }
+
+    var adj = p === 0 ? baseRingVis : rewireSets(baseRingVis, N_VIS, K_VIS, p);
+    var edges = ringVisEdges(adj, N_VIS, K_VIS);
+
+    edges.forEach(function (e) {
+      ctx.beginPath();
+      ctx.moveTo(positions[e.a].x, positions[e.a].y);
+      ctx.lineTo(positions[e.b].x, positions[e.b].y);
+      if (e.shortcut) {
+        ctx.strokeStyle = 'rgba(226,83,61,0.8)';
+        ctx.lineWidth = 1.6;
+      } else {
+        ctx.strokeStyle = 'rgba(60,60,60,0.35)';
+        ctx.lineWidth = 1.2;
+      }
+      ctx.stroke();
+    });
+
+    positions.forEach(function (pos) {
+      ctx.beginPath();
+      ctx.arc(pos.x, pos.y, 5, 0, Math.PI * 2);
+      ctx.fillStyle = '#2f6fed';
+      ctx.fill();
+    });
+  }
+
+  // ---------- larger reference network for C(p), L(p) ----------
+  var N_STAT = 400, K_STAT = 10;
+
+  function buildRingMatrix(N, k) {
+    var half = k / 2;
+    var mat = new Uint8Array(N * N);
+    for (var i = 0; i < N; i++) {
+      for (var j = 1; j <= half; j++) {
+        var b = (i + j) % N;
+        mat[i * N + b] = 1; mat[b * N + i] = 1;
+      }
+    }
+    return mat;
+  }
+
+  function rewireMatrix(baseMat, N, k, p) {
+    var half = k / 2;
+    var mat = new Uint8Array(baseMat);
+    for (var i = 0; i < N; i++) {
+      for (var j = 1; j <= half; j++) {
+        var target = (i + j) % N;
+        if (!mat[i * N + target]) continue;
+        if (Math.random() < p) {
+          var newTarget, tries = 0;
+          do { newTarget = Math.floor(Math.random() * N); tries++; }
+          while ((newTarget === i || mat[i * N + newTarget]) && tries < 200);
+          if (newTarget !== i && !mat[i * N + newTarget]) {
+            mat[i * N + target] = 0; mat[target * N + i] = 0;
+            mat[i * N + newTarget] = 1; mat[newTarget * N + i] = 1;
+          }
+        }
+      }
+    }
+    return mat;
+  }
+
+  function matrixToList(mat, N) {
+    var list = new Array(N);
+    for (var i = 0; i < N; i++) {
+      var arr = [], base = i * N;
+      for (var j = 0; j < N; j++) if (mat[base + j]) arr.push(j);
+      list[i] = arr;
+    }
+    return list;
+  }
+
+  function averageClusteringMatrix(mat, N) {
+    var total = 0, counted = 0;
+    for (var i = 0; i < N; i++) {
+      var base = i * N, nb = [];
+      for (var j = 0; j < N; j++) if (mat[base + j]) nb.push(j);
+      var k = nb.length;
+      if (k < 2) continue;
+      var links = 0;
+      for (var a = 0; a < k; a++) {
+        for (var b = a + 1; b < k; b++) {
+          if (mat[nb[a] * N + nb[b]]) links++;
+        }
+      }
+      total += links / (k * (k - 1) / 2);
+      counted++;
+    }
+    return counted ? total / counted : 0;
+  }
+
+  function averagePathLengthList(list, N) {
+    var totalDist = 0, totalPairs = 0;
+    var dist = new Int32Array(N), queue = new Int32Array(N);
+    for (var s = 0; s < N; s++) {
+      dist.fill(-1);
+      dist[s] = 0;
+      queue[0] = s;
+      var qHead = 0, qTail = 1;
+      while (qHead < qTail) {
+        var u = queue[qHead++], nb = list[u];
+        for (var idx = 0; idx < nb.length; idx++) {
+          var v = nb[idx];
+          if (dist[v] === -1) { dist[v] = dist[u] + 1; queue[qTail++] = v; }
+        }
+      }
+      for (var t = 0; t < N; t++) if (t !== s && dist[t] !== -1) { totalDist += dist[t]; totalPairs++; }
+    }
+    return totalPairs ? totalDist / totalPairs : 0;
+  }
+
+  var curve = null, C0 = 0, L0 = 0;
+
+  function computeCurve() {
+    var baseMat = buildRingMatrix(N_STAT, K_STAT);
+    C0 = averageClusteringMatrix(baseMat, N_STAT);
+    L0 = averagePathLengthList(matrixToList(baseMat, N_STAT), N_STAT);
+
+    var numSamples = 24, trials = 30, pts = [];
+    for (var i = 0; i < numSamples; i++) {
+      var logP = -4 + 4 * i / (numSamples - 1);
+      var p = Math.pow(10, logP);
+      var cSum = 0, lSum = 0;
+      for (var t = 0; t < trials; t++) {
+        var mat = rewireMatrix(baseMat, N_STAT, K_STAT, p);
+        cSum += averageClusteringMatrix(mat, N_STAT);
+        lSum += averagePathLengthList(matrixToList(mat, N_STAT), N_STAT);
+      }
+      pts.push({ logP: logP, cRatio: (cSum / trials) / C0, lRatio: (lSum / trials) / L0 });
+    }
+    curve = pts;
+  }
+
+  function interpolateCurve(logP) {
+    if (!curve) return { cRatio: 1, lRatio: 1 };
+    if (logP <= curve[0].logP) return curve[0];
+    if (logP >= curve[curve.length - 1].logP) return curve[curve.length - 1];
+    for (var i = 0; i < curve.length - 1; i++) {
+      if (logP >= curve[i].logP && logP <= curve[i + 1].logP) {
+        var t = (logP - curve[i].logP) / (curve[i + 1].logP - curve[i].logP);
+        return {
+          cRatio: curve[i].cRatio + t * (curve[i + 1].cRatio - curve[i].cRatio),
+          lRatio: curve[i].lRatio + t * (curve[i + 1].lRatio - curve[i].lRatio)
+        };
+      }
+    }
+    return curve[curve.length - 1];
+  }
+
+  function drawCurve(currentLogP, currentP) {
+    var canvas = document.getElementById('curveCanvas');
+    var ctx = setupCanvas(canvas);
+    var w = canvas.clientWidth, h = canvas.clientHeight;
+    ctx.clearRect(0, 0, w, h);
+    if (!curve) return;
+
+    var margin = { left: 34, right: 12, top: 12, bottom: 28 };
+    var plotW = Math.max(1, w - margin.left - margin.right);
+    var plotH = Math.max(1, h - margin.top - margin.bottom);
+    var minLogP = -4, maxLogP = 0;
+
+    function xOf(logP) { return margin.left + (logP - minLogP) / (maxLogP - minLogP) * plotW; }
+    function yOf(ratio) { return margin.top + (1 - ratio) * plotH; }
+
+    ctx.strokeStyle = '#ccc';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(margin.left, margin.top);
+    ctx.lineTo(margin.left, margin.top + plotH);
+    ctx.lineTo(margin.left + plotW, margin.top + plotH);
+    ctx.stroke();
+
+    ctx.fillStyle = '#999';
+    ctx.font = '10px Barlow, sans-serif';
+    ctx.fillText('log₁₀(p)', margin.left + plotW / 2 - 16, h - 6);
+
+    function drawSeries(key, color) {
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.8;
+      ctx.beginPath();
+      curve.forEach(function (pt, i) {
+        var x = xOf(pt.logP), y = yOf(pt[key]);
+        if (i === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+      });
+      ctx.stroke();
+      ctx.fillStyle = color;
+      curve.forEach(function (pt) {
+        var x = xOf(pt.logP), y = yOf(pt[key]);
+        ctx.beginPath();
+        ctx.arc(x, y, 2.2, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    }
+    drawSeries('cRatio', '#2f6fed');
+    drawSeries('lRatio', '#e2533d');
+
+    if (currentP > 0) {
+      var mx = xOf(Math.max(minLogP, currentLogP));
+      ctx.strokeStyle = 'rgba(0,0,0,0.35)';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([3, 3]);
+      ctx.beginPath();
+      ctx.moveTo(mx, margin.top);
+      ctx.lineTo(mx, margin.top + plotH);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+  }
+
+  // ---------- UI wiring ----------
+  var pSlider = document.getElementById('pSlider');
+  var pValue = document.getElementById('pValue');
+  var rerollBtn = document.getElementById('rerollBtn');
+  var statC = document.getElementById('statC');
+  var statL = document.getElementById('statL');
+  var curveStatus = document.getElementById('curveStatus');
+
+  function sliderToP(v) {
+    if (v <= 0) return 0;
+    var logP = -4 + 4 * (v / 1000);
+    return Math.pow(10, logP);
+  }
+
+  function formatP(p) {
+    if (p === 0) return '0 (regular ring)';
+    if (p < 0.001) return p.toExponential(1);
+    return p.toFixed(4);
+  }
+
+  function update() {
+    var v = Number(pSlider.value);
+    var p = sliderToP(v);
+    pValue.textContent = formatP(p);
+    drawRing(p);
+    var logP = p > 0 ? Math.log(p) / Math.LN10 : -4;
+    drawCurve(logP, p);
+    var interp = interpolateCurve(logP);
+    statC.textContent = interp.cRatio.toFixed(3);
+    statL.textContent = interp.lRatio.toFixed(3);
+  }
+
+  pSlider.addEventListener('input', update);
+  rerollBtn.addEventListener('click', update);
+
+  drawRing(0);
+
+  setTimeout(function () {
+    computeCurve();
+    curveStatus.style.display = 'none';
+    update();
+  }, 10);
+})();
+</script>
+</body>
+</html>

@@ -14,3 +14,18 @@ playground:
       - Paper Review
     description: >-
       Reviewing the paper that introduced scale-free networks, and building an interactive simulation to watch preferential attachment create hubs in real time
+  - title: "Collective Dynamics of 'Small-World' Networks"
+    no_image: true
+    paper: "https://www.nature.com/articles/30918"
+    demo: "/assets/playground/collective-dynamics-small-world/"
+    demo_inline: true
+    detail: >
+      <p>Watts and Strogatz's 1998 paper started from a regular ring lattice, where every node connects only to its nearest neighbors — highly clustered, but far apart. Rewiring each local edge to a random node with probability p interpolates toward a random graph. The surprise: even a tiny amount of rewiring collapses the average path length almost to the random-graph level while the clustering coefficient barely drops, so a network can be highly clustered and a "small world" at the same time.</p>
+
+      <p>I built the simulation below to see this myself — rewiring an illustrative ring lattice at a chosen p, and tracking where that p falls on the clustering-coefficient and path-length curves computed from a larger reference network, reproducing the shape of the paper's central figure.</p>
+    tags:
+      - Network Science
+      - Complex Systems
+      - Paper Review
+    description: >-
+      Reviewing the paper that introduced small-world networks, and building an interactive simulation to watch clustering and path length diverge as a ring lattice is randomly rewired
