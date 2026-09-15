@@ -1,0 +1,86 @@
+---
+layout: default
+baseurl: /playground
+title: Playground
+permalink: /playground
+description: Playground of Hyeshin Chu
+---
+
+{% assign items = site.data.playground.playground %}
+
+<script src="https://unpkg.com/masonry-layout@4/dist/masonry.pkgd.min.js"></script>
+<script src="https://unpkg.com/imagesloaded@5/imagesloaded.pkgd.min.js"></script>
+
+<div class="container py-4">
+    <p style="font-weight: 500 !important; text-transform: uppercase;">Playground</p>
+    <p style="font-size: .85rem;">Papers I studied, reviewed, and implemented as demos.</p>
+    <div class="row mt-3 g-3 grid">
+        {% for item in items %}
+        <div class="col-12 col-sm-6 col-md-4 col-lg-3 grid-item">
+            <div class="archive-container" data-bs-toggle="modal" data-bs-target="#playgroundModal{{ forloop.index }}">
+                {% unless item.no_image %}
+                <img class="archive-img" src="{{ item.image | prepend: '/assets/images/playground/' | relative_url }}">
+                {% endunless %}
+                <div class="archive-container-inner">
+                    <p class="archive-title">{{ item.title }}</p>
+                    <p class="archive-description">{{ item.description }}</p>
+                    <div class="tags">
+                      <p>
+                        {% for tag in item.tags %}
+                        <a title="" href="">{{ tag }}</a>
+                        {% endfor %}
+                      </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal fade" id="playgroundModal{{ forloop.index }}" tabindex="-1" aria-labelledby="playgroundModalLabel{{ forloop.index }}" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+              <div class="modal-content">
+                <div class="modal-header">
+                    <div style="display: block !important">
+                        <h5 class="modal-title" id="playgroundModalLabel{{ forloop.index }}">{{ item.title }}</h5>
+                        <p class="modal-description">{{ item.description }}</p>
+                        <p class="modal-link">{% if item.paper %}<a href="{% if item.paper contains 'http' %} {{ item.paper }} {% else %} /assets/pdf/{{ item.paper }} {% endif %}"><i class="fas fa-book"></i>&nbsp; Paper</a> &nbsp;&nbsp;&nbsp; {% endif %}{% if item.video %}<a href="{{ item.video }}"><i class="fas fa-play"></i>&nbsp; Review</a> &nbsp;&nbsp;&nbsp; {% endif %}{% if item.demo %}<a href="{{ item.demo }}" target="_blank" rel="noopener noreferrer"><i class="fas fa-desktop"></i>&nbsp; Demo</a>{% endif %}</p>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    {{ item.detail }}
+                    {% if item.demo_inline %}
+                    <div class="row mt-4">
+                        <iframe data-src="{{ item.demo | relative_url }}" style="width: 100%; height: 760px; border: 1px solid #eee;"></iframe>
+                    </div>
+                    {% endif %}
+                </div>
+              </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% if items == nil or items.size == 0 %}
+    <p class="mt-4" style="color: #999;">Coming soon.</p>
+    {% endif %}
+</div>
+
+<script>
+    var grid = document.querySelector('.grid');
+    var msnry = new Masonry( grid, {
+        percentPosition: true,
+        itemSelector: '.grid-item'
+    });
+    imagesLoaded( grid ).on( 'progress', function() {
+        msnry.layout();
+    });
+
+    document.querySelectorAll('.modal').forEach(function (modalEl) {
+        var iframe = modalEl.querySelector('iframe[data-src]');
+        if (!iframe) return;
+        modalEl.addEventListener('show.bs.modal', function () {
+            if (!iframe.getAttribute('src')) iframe.setAttribute('src', iframe.getAttribute('data-src'));
+        });
+        modalEl.addEventListener('hidden.bs.modal', function () {
+            iframe.removeAttribute('src');
+        });
+    });
+</script>

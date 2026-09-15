@@ -1,0 +1,16 @@
+playground:
+  - title: "Emergence of Scaling in Random Networks"
+    no_image: true
+    paper: "https://arxiv.org/abs/cond-mat/9910332"
+    demo: "/assets/playground/emergence-of-scaling/"
+    demo_inline: true
+    detail: >
+      <p>Barabási and Albert's 1999 paper showed that many real-world networks — the web, citation networks, actor collaborations — aren't wired randomly. They grow over time, and new nodes preferentially connect to nodes that are already well-connected. These two ingredients, growth and preferential attachment, are enough to produce scale-free networks: a handful of highly connected hubs and a power-law degree distribution P(k) ~ k<sup>-3</sup>, with no hub deliberately designed.</p>
+
+      <p>I built the simulation below to see this emerge myself — growing a network node by node under preferential attachment versus plain random attachment, and watching the degree distribution bend into a power law (a straight line on a log-log plot) only in the preferential-attachment case.</p>
+    tags:
+      - Network Science
+      - Complex Systems
+      - Paper Review
+    description: >-
+      Reviewing the paper that introduced scale-free networks, and building an interactive simulation to watch preferential attachment create hubs in real time

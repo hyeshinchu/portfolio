@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Emergence of Scaling — Interactive Demo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --accent: #2f6fed;
+    --accent-soft: #dce7fc;
+    --text: #333;
+    --muted: #888;
+    --border: #e6e6e6;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Barlow', Arial, sans-serif;
+    color: var(--text);
+    background: #fff;
+  }
+  .wrap {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px 20px 28px;
+  }
+  h1 {
+    font-size: 1.15rem;
+    font-weight: 500;
+    margin: 0 0 10px;
+  }
+  .intro p {
+    font-size: .85rem;
+    font-weight: 300;
+    line-height: 1.55;
+    color: var(--text);
+    margin: 0 0 10px;
+  }
+  .intro code {
+    background: #f4f4f4;
+    padding: 1px 5px;
+    border-radius: 3px;
+    font-size: .82em;
+  }
+  .controls {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 14px;
+    padding: 14px;
+    margin: 14px 0;
+    background: #fafafa;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+  }
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .field label {
+    font-size: .7rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: .3px;
+    color: var(--muted);
+  }
+  .field select, .field input[type=number] {
+    font-family: inherit;
+    font-size: .82rem;
+    padding: 5px 7px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 84px;
+  }
+  .field select { width: auto; min-width: 230px; }
+  .btn-row { display: flex; gap: 6px; flex-wrap: wrap; }
+  button {
+    font-family: inherit;
+    font-size: .8rem;
+    font-weight: 400;
+    padding: 6px 12px;
+    border: 1px solid #333;
+    background: #fff;
+    color: #333;
+    border-radius: 5px;
+    cursor: pointer;
+  }
+  button:hover { background: #333; color: #fff; }
+  button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+  button.primary:hover { background: #1f57c9; }
+  button:disabled { opacity: .4; cursor: not-allowed; }
+  button:disabled:hover { background: #fff; color: #333; }
+  .speed-field input[type=range] { width: 110px; }
+  .panels {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .panel {
+    flex: 1 1 420px;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px;
+    min-width: 0;
+  }
+  .panel h2 {
+    font-size: .78rem;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: .3px;
+    color: var(--muted);
+    margin: 0 0 8px;
+  }
+  #netCanvas { width: 100%; height: 360px; display: block; background: #fff; }
+  #distCanvas { width: 100%; height: 240px; display: block; }
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 6px 14px;
+    margin-top: 10px;
+    font-size: .78rem;
+  }
+  .stats .stat-label { color: var(--muted); }
+  .stats .stat-value { font-weight: 500; }
+  .cap-notice {
+    display: none;
+    margin-top: 8px;
+    font-size: .72rem;
+    color: #b45309;
+    background: #fff7ed;
+    border: 1px solid #fed7aa;
+    padding: 5px 8px;
+    border-radius: 5px;
+  }
+  .legend {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: .72rem;
+    color: var(--muted);
+    margin-top: 8px;
+  }
+  .legend .dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="intro">
+    <h1>Emergence of Scaling in Random Networks — Interactive Demo</h1>
+    <p>Barabási &amp; Albert (1999) showed that many real-world networks — the web, citation networks, actor collaborations — aren't wired randomly. They <b>grow</b> over time, and new nodes <b>preferentially attach</b> to nodes that are already well-connected ("the rich get richer"). These two simple ingredients are enough to produce <i>scale-free</i> networks: a few highly-connected hubs and a power-law degree distribution <code>P(k) ~ k<sup>-3</sup></code> — a straight line on a log-log plot — with no hub deliberately designed.</p>
+    <p>Grow the network below under <b>preferential attachment</b> and watch hubs emerge, then switch to <b>random attachment</b> (growth alone, no preference for popular nodes) and see the degree distribution curve away from a straight line instead.</p>
+  </div>
+
+  <div class="controls">
+    <div class="field">
+      <label for="modeSelect">Attachment rule</label>
+      <select id="modeSelect">
+        <option value="ba">Preferential attachment (Barabási–Albert)</option>
+        <option value="random">Random attachment (growth only)</option>
+      </select>
+    </div>
+    <div class="field">
+      <label for="m0Input">Initial nodes (m₀)</label>
+      <input type="number" id="m0Input" value="5" min="1" max="20">
+    </div>
+    <div class="field">
+      <label for="mInput">Edges per new node (m)</label>
+      <input type="number" id="mInput" value="2" min="1" max="20">
+    </div>
+    <div class="field">
+      <button id="resetBtn">Reset</button>
+    </div>
+    <div class="field">
+      <label>Grow</label>
+      <div class="btn-row">
+        <button id="addOneBtn">+1</button>
+        <button id="addTenBtn">+10</button>
+        <button id="addFiftyBtn">+50</button>
+        <button id="playBtn" class="primary">Play</button>
+      </div>
+    </div>
+    <div class="field speed-field">
+      <label for="speedRange">Speed</label>
+      <input type="range" id="speedRange" min="20" max="400" value="120">
+    </div>
+  </div>
+
+  <div class="panels">
+    <div class="panel">
+      <h2>Network</h2>
+      <canvas id="netCanvas"></canvas>
+      <div class="legend">
+        <span class="dot" style="background: rgb(210,215,222);"></span> low degree
+        <span class="dot" style="background: rgb(47,111,237); margin-left: 8px;"></span> high degree (hub)
+      </div>
+    </div>
+    <div class="panel">
+      <h2>Degree distribution (log–log)</h2>
+      <canvas id="distCanvas"></canvas>
+      <div class="stats">
+        <div><span class="stat-label">Nodes (N):</span> <span class="stat-value" id="statN">0</span></div>
+        <div><span class="stat-label">Edges:</span> <span class="stat-value" id="statE">0</span></div>
+        <div><span class="stat-label">Avg. degree:</span> <span class="stat-value" id="statAvg">0</span></div>
+        <div><span class="stat-label">Max degree:</span> <span class="stat-value" id="statMax">0</span></div>
+        <div style="grid-column: 1 / -1;"><span class="stat-label">Estimated exponent γ (paper predicts ≈3):</span> <span class="stat-value" id="statGamma">—</span></div>
+      </div>
+      <div class="cap-notice" id="capNotice">Capped at 300 nodes to keep the simulation smooth. Reset to grow a fresh network.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var MAX_N = 300;
+
+  function Network(m0, m, mode) {
+    this.m0 = Math.max(1, m0 | 0);
+    this.m = Math.max(1, Math.min(m | 0, this.m0));
+    this.mode = mode;
+    this.nodes = [];
+    this.edges = [];
+    for (var i = 0; i < this.m0; i++) this.nodes.push(this.makeNode());
+    if (this.m0 > 1) {
+      for (var j = 0; j < this.m0; j++) this.connect(j, (j + 1) % this.m0);
+    }
+  }
+
+  Network.prototype.makeNode = function () {
+    var angle = Math.random() * Math.PI * 2;
+    var r = 15 + Math.random() * 10;
+    return { id: this.nodes.length, x: Math.cos(angle) * r, y: Math.sin(angle) * r, vx: 0, vy: 0, fx: 0, fy: 0, degree: 0 };
+  };
+
+  Network.prototype.connect = function (a, b) {
+    this.edges.push([a, b]);
+    this.nodes[a].degree++;
+    this.nodes[b].degree++;
+  };
+
+  Network.prototype.pickPreferential = function (exclude) {
+    var candidates = [];
+    var total = 0;
+    for (var i = 0; i < this.nodes.length; i++) {
+      if (exclude.has(i)) continue;
+      candidates.push(this.nodes[i]);
+      total += this.nodes[i].degree + 1;
+    }
+    if (!candidates.length) return null;
+    var r = Math.random() * total;
+    for (var k = 0; k < candidates.length; k++) {
+      r -= candidates[k].degree + 1;
+      if (r <= 0) return candidates[k].id;
+    }
+    return candidates[candidates.length - 1].id;
+  };
+
+  Network.prototype.pickRandom = function (exclude) {
+    var candidates = [];
+    for (var i = 0; i < this.nodes.length; i++) if (!exclude.has(i)) candidates.push(i);
+    if (!candidates.length) return null;
+    return candidates[Math.floor(Math.random() * candidates.length)];
+  };
+
+  Network.prototype.addNode = function () {
+    var newId = this.nodes.length;
+    var targets = new Set();
+    var m = Math.min(this.m, newId);
+    var guard = 0;
+    while (targets.size < m && guard < 1000) {
+      guard++;
+      var pick = this.mode === 'ba' ? this.pickPreferential(targets) : this.pickRandom(targets);
+      if (pick === null) break;
+      targets.add(pick);
+    }
+    var sx = 0, sy = 0;
+    targets.forEach(function (t) { sx += this.nodes[t].x; sy += this.nodes[t].y; }, this);
+    var cx = targets.size ? sx / targets.size : 0;
+    var cy = targets.size ? sy / targets.size : 0;
+    var angle = Math.random() * Math.PI * 2;
+    this.nodes.push({ id: newId, x: cx + Math.cos(angle) * 20, y: cy + Math.sin(angle) * 20, vx: 0, vy: 0, fx: 0, fy: 0, degree: 0 });
+    var self = this;
+    targets.forEach(function (t) { self.connect(newId, t); });
+  };
+
+  Network.prototype.degreeHistogram = function () {
+    var hist = new Map();
+    for (var i = 0; i < this.nodes.length; i++) {
+      var d = this.nodes[i].degree;
+      hist.set(d, (hist.get(d) || 0) + 1);
+    }
+    return hist;
+  };
+
+  Network.prototype.maxDegree = function () {
+    var m = 0;
+    for (var i = 0; i < this.nodes.length; i++) if (this.nodes[i].degree > m) m = this.nodes[i].degree;
+    return m;
+  };
+
+  function stepPhysics(net) {
+    var nodes = net.nodes, n = nodes.length;
+    var repulsion = 900, springK = 0.02, springLen = 26, damping = 0.82, gravity = 0.012;
+    for (var i = 0; i < n; i++) {
+      var ni = nodes[i], fx = 0, fy = 0;
+      for (var j = 0; j < n; j++) {
+        if (i === j) continue;
+        var nj = nodes[j];
+        var dx = ni.x - nj.x, dy = ni.y - nj.y;
+        var distSq = dx * dx + dy * dy;
+        if (distSq < 0.02) { dx = Math.random() - 0.5; dy = Math.random() - 0.5; distSq = 1; }
+        var dist = Math.sqrt(distSq);
+        var force = repulsion / distSq;
+        fx += (dx / dist) * force;
+        fy += (dy / dist) * force;
+      }
+      fx += -ni.x * gravity;
+      fy += -ni.y * gravity;
+      ni.fx = fx; ni.fy = fy;
+    }
+    for (var e = 0; e < net.edges.length; e++) {
+      var a = net.edges[e][0], b = net.edges[e][1];
+      var na = nodes[a], nb = nodes[b];
+      var edx = nb.x - na.x, edy = nb.y - na.y;
+      var edist = Math.sqrt(edx * edx + edy * edy) || 0.01;
+      var eforce = springK * (edist - springLen);
+      var efx = (edx / edist) * eforce, efy = (edy / edist) * eforce;
+      na.fx += efx; na.fy += efy;
+      nb.fx -= efx; nb.fy -= efy;
+    }
+    for (var k2 = 0; k2 < n; k2++) {
+      var nk = nodes[k2];
+      nk.vx = (nk.vx + nk.fx) * damping;
+      nk.vy = (nk.vy + nk.fy) * damping;
+      nk.x += nk.vx;
+      nk.y += nk.vy;
+    }
+  }
+
+  function setupCanvas(canvas) {
+    var dpr = window.devicePixelRatio || 1;
+    var w = canvas.clientWidth, h = canvas.clientHeight;
+    canvas.width = Math.max(1, w * dpr);
+    canvas.height = Math.max(1, h * dpr);
+    var ctx = canvas.getContext('2d');
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    return ctx;
+  }
+
+  function lerpColor(a, b, t) {
+    return [
+      Math.round(a[0] + (b[0] - a[0]) * t),
+      Math.round(a[1] + (b[1] - a[1]) * t),
+      Math.round(a[2] + (b[2] - a[2]) * t)
+    ];
+  }
+
+  function renderNetwork(ctx, canvas, net) {
+    var w = canvas.clientWidth, h = canvas.clientHeight;
+    ctx.clearRect(0, 0, w, h);
+    if (!net.nodes.length) return;
+    var minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+    for (var i = 0; i < net.nodes.length; i++) {
+      var n = net.nodes[i];
+      if (n.x < minX) minX = n.x; if (n.x > maxX) maxX = n.x;
+      if (n.y < minY) minY = n.y; if (n.y > maxY) maxY = n.y;
+    }
+    var pad = 30;
+    var bw = Math.max(maxX - minX, 1), bh = Math.max(maxY - minY, 1);
+    var scale = Math.min((w - pad * 2) / bw, (h - pad * 2) / bh, 8);
+    var cx = (minX + maxX) / 2, cy = (minY + maxY) / 2;
+
+    ctx.save();
+    ctx.translate(w / 2, h / 2);
+    ctx.scale(scale, scale);
+    ctx.translate(-cx, -cy);
+
+    ctx.strokeStyle = 'rgba(60,60,60,0.15)';
+    ctx.lineWidth = 1 / scale;
+    ctx.beginPath();
+    for (var e = 0; e < net.edges.length; e++) {
+      var a = net.nodes[net.edges[e][0]], b = net.nodes[net.edges[e][1]];
+      ctx.moveTo(a.x, a.y);
+      ctx.lineTo(b.x, b.y);
+    }
+    ctx.stroke();
+
+    var maxDeg = Math.max(1, net.maxDegree());
+    for (var k = 0; k < net.nodes.length; k++) {
+      var node = net.nodes[k];
+      var t = node.degree / maxDeg;
+      var radius = 3 + Math.sqrt(node.degree) * 2.2;
+      var color = lerpColor([210, 215, 222], [47, 111, 237], t);
+      ctx.beginPath();
+      ctx.arc(node.x, node.y, radius, 0, Math.PI * 2);
+      ctx.fillStyle = 'rgb(' + color[0] + ',' + color[1] + ',' + color[2] + ')';
+      ctx.fill();
+    }
+    ctx.restore();
+  }
+
+  function renderDistribution(ctx, canvas, net) {
+    var w = canvas.clientWidth, h = canvas.clientHeight;
+    ctx.clearRect(0, 0, w, h);
+    var N = net.nodes.length;
+    if (N < 2) return null;
+
+    // Plot the complementary CDF, P(K >= k), rather than the raw histogram:
+    // the raw per-degree histogram is dominated by single-hub noise in the
+    // tail, which biases a naive least-squares fit. The CCDF aggregates
+    // counts and gives a much more stable exponent estimate at moderate N.
+    var hist = net.degreeHistogram();
+    var degrees = [];
+    hist.forEach(function (count, k) { if (k > 0) degrees.push(k); });
+    if (!degrees.length) return null;
+    degrees.sort(function (a, b) { return a - b; });
+
+    var logPoints = [];
+    var cumFromTop = 0;
+    for (var i = degrees.length - 1; i >= 0; i--) {
+      cumFromTop += hist.get(degrees[i]);
+      logPoints.push({ logK: Math.log(degrees[i]) / Math.LN10, logC: Math.log(cumFromTop / N) / Math.LN10 });
+    }
+    logPoints.reverse();
+
+    var margin = { left: 40, right: 12, top: 10, bottom: 28 };
+    var plotW = Math.max(1, w - margin.left - margin.right);
+    var plotH = Math.max(1, h - margin.top - margin.bottom);
+
+    var minLogK = 0, maxLogK = 0.3, minLogC = 0, maxLogC = 0.1;
+    for (var j = 0; j < logPoints.length; j++) {
+      if (logPoints[j].logK > maxLogK) maxLogK = logPoints[j].logK;
+      if (j === 0 || logPoints[j].logC < minLogC) minLogC = logPoints[j].logC;
+    }
+    minLogC -= 0.15;
+
+    function xOf(logK) { return margin.left + (logK - minLogK) / (maxLogK - minLogK || 1) * plotW; }
+    function yOf(logC) { return margin.top + (1 - (logC - minLogC) / (maxLogC - minLogC || 1)) * plotH; }
+
+    ctx.strokeStyle = '#ccc';
+    ctx.lineWidth = 1;
+    ctx.beginPath();
+    ctx.moveTo(margin.left, margin.top);
+    ctx.lineTo(margin.left, margin.top + plotH);
+    ctx.lineTo(margin.left + plotW, margin.top + plotH);
+    ctx.stroke();
+
+    ctx.fillStyle = '#999';
+    ctx.font = '10px Barlow, sans-serif';
+    ctx.fillText('log₁₀(k)', margin.left + plotW / 2 - 18, h - 6);
+    ctx.save();
+    ctx.translate(10, margin.top + plotH / 2 + 26);
+    ctx.rotate(-Math.PI / 2);
+    ctx.fillText('log₁₀(P(K≥k))', 0, 0);
+    ctx.restore();
+
+    var n = logPoints.length, sumX = 0, sumY = 0, sumXY = 0, sumXX = 0;
+    for (var p = 0; p < n; p++) {
+      sumX += logPoints[p].logK; sumY += logPoints[p].logC;
+      sumXY += logPoints[p].logK * logPoints[p].logC; sumXX += logPoints[p].logK * logPoints[p].logK;
+    }
+    var gamma = null;
+    if (n >= 4) {
+      var denom = n * sumXX - sumX * sumX;
+      if (Math.abs(denom) > 1e-9) {
+        var slope = (n * sumXY - sumX * sumY) / denom;
+        var intercept = (sumY - slope * sumX) / n;
+        gamma = 1 - slope; // CCDF of a k^-gamma law scales as k^-(gamma-1)
+        ctx.strokeStyle = 'rgba(220,60,60,0.75)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(xOf(minLogK), yOf(slope * minLogK + intercept));
+        ctx.lineTo(xOf(maxLogK), yOf(slope * maxLogK + intercept));
+        ctx.stroke();
+      }
+    }
+
+    ctx.fillStyle = '#2f6fed';
+    for (var q = 0; q < logPoints.length; q++) {
+      var x = xOf(logPoints[q].logK), y = yOf(logPoints[q].logC);
+      ctx.beginPath();
+      ctx.arc(x, y, 3, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    return gamma;
+  }
+
+  // ---- UI wiring ----
+  var netCanvas = document.getElementById('netCanvas');
+  var distCanvas = document.getElementById('distCanvas');
+  var modeSelect = document.getElementById('modeSelect');
+  var m0Input = document.getElementById('m0Input');
+  var mInput = document.getElementById('mInput');
+  var resetBtn = document.getElementById('resetBtn');
+  var addOneBtn = document.getElementById('addOneBtn');
+  var addTenBtn = document.getElementById('addTenBtn');
+  var addFiftyBtn = document.getElementById('addFiftyBtn');
+  var playBtn = document.getElementById('playBtn');
+  var speedRange = document.getElementById('speedRange');
+  var statN = document.getElementById('statN');
+  var statE = document.getElementById('statE');
+  var statAvg = document.getElementById('statAvg');
+  var statMax = document.getElementById('statMax');
+  var statGamma = document.getElementById('statGamma');
+  var capNotice = document.getElementById('capNotice');
+
+  var net = null;
+  var playing = false;
+  var playTimer = null;
+
+  function clampInt(v, lo, hi) {
+    v = parseInt(v, 10);
+    if (isNaN(v)) v = lo;
+    return Math.max(lo, Math.min(hi, v));
+  }
+
+  function reset() {
+    var m0 = clampInt(m0Input.value, 1, 20);
+    var m = clampInt(mInput.value, 1, m0);
+    m0Input.value = m0;
+    mInput.value = m;
+    net = new Network(m0, m, modeSelect.value);
+    updateStats();
+  }
+
+  function updateStats() {
+    statN.textContent = net.nodes.length;
+    statE.textContent = net.edges.length;
+    statMax.textContent = net.maxDegree();
+    statAvg.textContent = net.nodes.length ? (2 * net.edges.length / net.nodes.length).toFixed(2) : '0';
+    capNotice.style.display = net.nodes.length >= MAX_N ? 'block' : 'none';
+  }
+
+  function addNodes(count) {
+    for (var i = 0; i < count; i++) {
+      if (net.nodes.length >= MAX_N) break;
+      net.addNode();
+    }
+    updateStats();
+  }
+
+  function stopPlaying() {
+    playing = false;
+    playBtn.textContent = 'Play';
+    if (playTimer) { clearTimeout(playTimer); playTimer = null; }
+  }
+
+  function schedulePlay() {
+    if (!playing) return;
+    if (net.nodes.length >= MAX_N) { stopPlaying(); return; }
+    net.addNode();
+    updateStats();
+    playTimer = setTimeout(schedulePlay, Number(speedRange.value));
+  }
+
+  modeSelect.addEventListener('change', function () { stopPlaying(); reset(); });
+  resetBtn.addEventListener('click', function () { stopPlaying(); reset(); });
+  addOneBtn.addEventListener('click', function () { addNodes(1); });
+  addTenBtn.addEventListener('click', function () { addNodes(10); });
+  addFiftyBtn.addEventListener('click', function () { addNodes(50); });
+  playBtn.addEventListener('click', function () {
+    playing = !playing;
+    playBtn.textContent = playing ? 'Pause' : 'Play';
+    if (playing) schedulePlay();
+  });
+
+  function animate() {
+    if (net) {
+      stepPhysics(net);
+      var ctx1 = setupCanvas(netCanvas);
+      renderNetwork(ctx1, netCanvas, net);
+      var ctx2 = setupCanvas(distCanvas);
+      var gamma = renderDistribution(ctx2, distCanvas, net);
+      statGamma.textContent = gamma !== null ? gamma.toFixed(2) : '—';
+    }
+    requestAnimationFrame(animate);
+  }
+
+  reset();
+  requestAnimationFrame(animate);
+})();
+</script>
+</body>
+</html>
