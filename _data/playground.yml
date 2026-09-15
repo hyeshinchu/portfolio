@@ -1,5 +1,5 @@
 playground:
-  - title: "Emergence of Scaling in Random Networks"
+  - title: "Emergence of Scaling in Random Networks (Barabási-Albert model)"
     no_image: true
     paper: "https://arxiv.org/abs/cond-mat/9910332"
     demo: "/assets/playground/emergence-of-scaling/"
@@ -14,7 +14,7 @@ playground:
       - Paper Review
     description: >-
       Reviewing the paper that introduced scale-free networks, and building an interactive simulation to watch preferential attachment create hubs in real time
-  - title: "Collective Dynamics of 'Small-World' Networks"
+  - title: "Collective Dynamics of 'Small-World' Networks (Watts-Strogatz model)"
     no_image: true
     paper: "https://www.nature.com/articles/30918"
     demo: "/assets/playground/collective-dynamics-small-world/"
