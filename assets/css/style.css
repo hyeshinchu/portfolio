@@ -524,9 +524,9 @@ a>.coauthor:hover {
 }
 
 .logo img {
-  width: 17px;
-  height: 17px;
-  margin: 0 4px 3px 2px;
+  width: auto;
+  height: 14px;
+  margin: 0 4px 1px 2px;
 }
 
 .logo span {
