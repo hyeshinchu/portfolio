@@ -1,4 +1,48 @@
 project:
+  - title: "EchoX: An LLM Persona-based Agentic System for UX Research"
+    no_image: true
+    detail: >
+      <p>Led the development of EchoX, an LLM persona-based agentic system that automates end-to-end user research — from persona generation and autonomous task execution to behavioral data collection and analysis.</p>
+
+      <hr>
+
+      <p><b>[My role in this project]</b><br>Leading the project end-to-end — designing the system architecture from persona generation through autonomous task execution to behavioral data collection and analysis.</p>
+    tags:
+      - Research
+      - Agentic AI
+      - <i class='fas fa-chalkboard-user'></i>&nbsp; DAN '25
+      - <i class='fas fa-chalkboard-user'></i>&nbsp; UX Korea '26
+    description: >-
+      Building an LLM persona-based agentic system that automates end-to-end user research
+  - title: Measuring Cognitive Load in Search Experience
+    no_image: true
+    detail: >
+      <p>Partnered with an university to measure the cognitive burden users experience in NAVER's search results, using eye-tracking, surveys, and interviews — translating findings into search experience design.</p>
+
+      <hr>
+
+      <p><b>[My role in this project]</b><br>Leading the project — designing the mixed-methods study (eye-tracking, survey, interview), coordinating with University researchers, and translating findings into search experience design recommendations.</p>
+    tags:
+      - Research
+      - Eye-tracking
+      - Industry-Academia Collaboration
+      - <i class='fas fa-book'></i>&nbsp; KSDS '26
+    description: >-
+      Measuring users' cognitive load in NAVER search through eye-tracking, surveys, and interviews to inform search experience design
+  - title: Evaluating Search Satisfaction in a Zero-Click Environment
+    no_image: true
+    detail: >
+      <p>As AI-generated answers increasingly lead to zero-click search behavior, I researched how to evaluate user satisfaction with search experiences and results in this new environment, combining quantitative and qualitative methods.</p>
+
+      <hr>
+
+      <p><b>[My role in this project]</b><br>Leading the project — designing the mixed-methods research framework to evaluate user satisfaction in a zero-click search environment.</p>
+    tags:
+      - Research
+      - AI
+      - Search UX
+    description: >-
+      Studying how to evaluate user satisfaction with search results in an AI-driven zero-click environment
   - title: Virtual Try-on
     image: vto_demo.png
     detail: >
